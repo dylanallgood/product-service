@@ -1,0 +1,78 @@
+
+** Run these commands in mongo cli to merge collections together **
+
+1. use <db> (whatever you called your database) 
+2. begin enter commands
+3. create indexes (localField and foreignField)
+
+// features on products
+db.products.aggregate([
+  {$lookup: {"from":"features", "localField":"product_id", "foreignField":"product_id", "as":"features"}},
+  {"$project": {"features.product_id": 0, "features._id": 0}},
+  {"$out": "draftOne"}
+])
+
+// photos on styles
+db.styles.aggregate([
+  {$lookup: {"from":"photos", "localField":"style_id", "foreignField":"style_id", "as":"photos"}},
+  {"$project": {"photos.style_id": 0, "photos._id": 0}},
+  {"$out": "draftTwo"}
+])
+
+// skus on styles
+db.draftTwo.aggregate([
+  {$lookup: {"from":"skus", "localField":"style_id", "foreignField":"style_id", "as":"skus"}},
+  {"$project": {"skus.style_id": 0, "skus._id": 0}},
+  {"$out": "draftThree"}
+])
+
+// styles on products
+db.draftOne.aggregate([
+  {$lookup: {"from":"draftThree", "localField":"product_id", "foreignField":"product_id", "as":"styles"}},
+  {"$project": {"styles._id": 0}},
+  {"$out": "draftFour"}
+])
+
+// related on products
+db.draftFour.aggregate([
+  {$lookup: {"from":"related", "localField":"product_id", "foreignField":"product_id", "as":"related"}},
+  {"$project": {"related.id": 0, "related._id": 0}},
+  {"$out": "product"}
+])
+
+
+For each csv file:
+
+mongoimport -d product-service -c <collection-name> --type csv --file <collection>.csv --headerline
+
+
+
+
+exporting local db to aws instance
+
+(local computer)
+1. sudo mongodump --db <db> --out <foldername>
+ex: --> sudo mongodump --db product-service --out sdc.db
+
+(transfer to AWS)
+2. filezilla to transfer sdc.db to AWS Ubuntu server
+
+(Swap file to increase memory size when restoring)
+3. - sudo dd if=/dev/zero of=/swapfile bs=128M count=32
+
+   - sudo chmod 600 /swapfile
+
+   - sudo mkswap /swapfile
+
+   - sudo swapon /swapfile
+
+   - sudo swapon -s
+
+   - (Open the file in the editor:)
+      sudo vi /etc/fstab
+
+   - (add following new line at end of file, save, then exit)
+      /swapfile swap swap defaults 0 0
+
+(AWS Server)
+4. sudo mongorestore --db product-service sdc.db
