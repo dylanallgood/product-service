@@ -9,7 +9,7 @@ mongoose
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
-  .then(() => app.listen(3000, () => console.log('listening on port 3000')))
+  .then(() => app.listen(8080, () => console.log('listening on port 8080')))
   .then(console.log('connected to db'))
   .catch((err) => console.log(err));
 

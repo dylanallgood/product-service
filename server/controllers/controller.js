@@ -2,9 +2,9 @@ const { Product } = require('../models/model');
 
 //****************PRODUCTS****************//
 const get_products = (req, res) => {
-  let count = parseInt(req.query.count) || 5;
+  let count = parseInt(req.params.count) || 5;
   // page?
-  let page = parseInt(req.body.page) || 1;
+  let page = parseInt(req.params.page) || 1;
 
   // set limit on number of products per request
   count > 50 ? (count = 50) : (count = req.query.count);
@@ -20,32 +20,34 @@ const get_products = (req, res) => {
 
 //****************PRODUCT BY ID****************//
 const get_product_id = (req, res) => {
-  let id = parseInt(req.query.product_id);
+  let id = parseInt(req.params.product_id);
+  console.log(id);
 
   Product.find({ product_id: id }, { _id: 0 })
+    .limit(1)
     .lean()
     .then((product) => {
-      res.status(200).send(product[0]);
+      res.status(200).send(product);
     })
     .catch((err) => console.log(err));
 };
 
 //****************STYLES****************//
 const get_product_styles = (req, res) => {
-  let id = parseInt(req.query.product_id);
+  let id = parseInt(req.params.product_id);
 
   Product.find({ product_id: id }, { _id: 0 })
     .select('styles')
     .lean()
     .then((styles) => {
-      res.status(200).send(styles);
+      res.status(200).send(styles[0]);
     })
     .catch((err) => console.log(err));
 };
 
 //****************RELATED PRODUCTS****************//
 const get_related_products = (req, res) => {
-  let id = parseInt(req.query.product_id);
+  let id = parseInt(req.params.product_id);
 
   Product.find({ product_id: id }, { _id: 0 })
     .select('related')
