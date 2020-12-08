@@ -21,7 +21,6 @@ const get_products = (req, res) => {
 //****************PRODUCT BY ID****************//
 const get_product_id = (req, res) => {
   let id = parseInt(req.params.product_id);
-  console.log(id);
 
   Product.find({ product_id: id }, { _id: 0 })
     .limit(1)
