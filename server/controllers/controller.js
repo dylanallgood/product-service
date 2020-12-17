@@ -1,4 +1,13 @@
 const { Product } = require('../models/model');
+const { promisify } = require('util');
+const redis = require('redis');
+const redisClient = redis.createClient(6379);
+const getPromise = promisify(redisClient.get).bind(redisClient);
+
+//****************REDIS CONNECT****************//
+// redisClient.on('connect', () => {
+//   console.log('Connected to Redis');
+// });
 
 //****************PRODUCTS****************//
 const get_products = (req, res) => {
@@ -22,24 +31,42 @@ const get_products = (req, res) => {
 const get_product_id = (req, res) => {
   let id = parseInt(req.params.product_id);
 
-  Product.find({ product_id: id }, { _id: 0 })
-    .limit(1)
+  //checks redis cache
+  getPromise(id)
+    .then((data) => {
+      if (data !== null) {
+        let result = JSON.parse(data);
+        res.json(result);
+      } else {
+        next();
+      }
+    })
+    .catch((err) => console.log(err));
+
+  Product.findOne({ product_id: id }, { _id: 0 })
     .lean()
     .then((product) => {
+      // store product in redis
+      let result = JSON.stringify(product);
+      redisClient.set(id, result);
       res.status(200).send(product);
     })
     .catch((err) => console.log(err));
 };
 
 //****************STYLES****************//
-const get_product_styles = (req, res) => {
+const get_product_styles = (req, res, next) => {
   let id = parseInt(req.params.product_id);
 
-  Product.find({ product_id: id }, { _id: 0 })
-    .select('styles')
-    .lean()
-    .then((styles) => {
-      res.status(200).send(styles[0]);
+  // checks redis cache
+  getPromise(id)
+    .then((data) => {
+      if (data !== null) {
+        let result = JSON.parse(data);
+        res.json(result.styles);
+      } else {
+        next();
+      }
     })
     .catch((err) => console.log(err));
 };
@@ -48,11 +75,15 @@ const get_product_styles = (req, res) => {
 const get_related_products = (req, res) => {
   let id = parseInt(req.params.product_id);
 
-  Product.find({ product_id: id }, { _id: 0 })
-    .select('related')
-    .lean()
-    .then((related) => {
-      res.status(200).send(related);
+  // checks redis cache
+  getPromise(id)
+    .then((data) => {
+      if (data !== null) {
+        let result = JSON.parse(data);
+        res.json(result.related);
+      } else {
+        next();
+      }
     })
     .catch((err) => console.log(err));
 };

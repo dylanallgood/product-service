@@ -104,4 +104,4 @@ to attach to this container (drop to shell):
 
  sudo docker exec -it be1a /bin/bash
 
- sudo docker run -d -p 27017-27019:27017-27019 -it df99
+ sudo docker run -d -p 3306:3306 -it c013
