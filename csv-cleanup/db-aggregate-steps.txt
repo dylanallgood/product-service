@@ -45,9 +45,6 @@ For each csv file:
 
 mongoimport -d product-service -c <collection-name> --type csv --file <collection>.csv --headerline
 
-
-
-
 exporting local db to aws instance
 
 (local computer)
@@ -76,32 +73,3 @@ ex: --> sudo mongodump --db product-service --out sdc.db
 
 (AWS Server)
 4. sudo mongorestore --db product-service sdc.db
-
-
-docker commit <CONTAINER ID> <NEW NAME> 
-
-docker tag <IMAGE_ID> dylanallgood/sdcmongodb:<tag>
-
-docker push dylanallgood/sdcmongodb
-
-
-STOP DOCKER CONTAINERS
-....?
-
-EXECUTE MODE
-CTRL D stops container
-sudo docker run -it 525b /bin/bash
-
-DETACHMENT MODE
-starts container in backgrou
-docker ps : shows process running
-sudo docker run -d -p 27017-27019:27017-27019 -it 525b
-to attach to this container (drop to shell):
-  docker exec -it <fisrt 4 digit> /bin/bash
-
-
-
-
- sudo docker exec -it be1a /bin/bash
-
- sudo docker run -d -p 3306:3306 -it c013
