@@ -6,12 +6,15 @@ detail page.
 Performed ETL on 6.5gb of messy CSV file data. Used Node to parse the files,
 clean the data, then merge each file into a collection. Performed an aggregation
 of all CSV files into a single Mongo collection to improve query read time.
+
 ![Product overview component](readme_assets/1.png)
 
 Reduced server response time from 66ms down to 3ms by using Redis to cache
+
 previous data. ![Product overview component](readme_assets/2.png)
 
-Average response time 13ms under a load of 800 requests per sec.
+Average response time 14ms under a load of 800 requests per sec.
+
 ![Product overview component](readme_assets/3.png)
 
 ## Tech Stack
