@@ -10,8 +10,9 @@ of all CSV files into a single Mongo collection to improve query read time.
 ![Product overview component](readme_assets/1.png)
 
 Reduced server response time from 66ms down to 3ms by using Redis to cache
+previous data.
 
-previous data. ![Product overview component](readme_assets/2.png)
+![Product overview component](readme_assets/2.png)
 
 Average response time 14ms under a load of 800 requests per sec.
 
